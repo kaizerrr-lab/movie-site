@@ -10,13 +10,22 @@ const playerModal = document.getElementById('playerModal');
 const seriesControls = document.getElementById('series-controls');
 const sideMenu = document.getElementById('side-menu');
 const clickTrap = document.getElementById('click-trap');
+const pageNumDisplay = document.getElementById('page-num');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
 
 let currentVideoId = null;
 let currentType = 'movie';
 let currentSeason = 1;
 let currentEpisode = 1;
+let currentPage = 1;
+let totalPages = 1;
+let currentEndpoint = 'trending/all/week';
+let isSearch = false;
+let searchQuery = '';
+let currentGenreId = null;
 
-window.onload = fetchTrending;
+window.onload = () => fetchTrending();
 
 function toggleMenu() {
     sideMenu.classList.toggle('active');
@@ -26,46 +35,94 @@ function hideTrap() {
     clickTrap.style.display = 'none';
 }
 
-async function fetchTrending() {
+async function fetchTrending(page = 1) {
+    currentEndpoint = 'trending/all/week';
+    isSearch = false;
+    currentGenreId = null;
+    currentPage = page;
     sectionTitle.innerText = "Trending Now";
-    const res = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}`);
+    const res = await fetch(`${BASE_URL}/${currentEndpoint}?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
-    displayContent(data.results);
+    totalPages = data.total_pages;
+    updatePagination(data.results);
 }
 
-async function fetchContent(type) {
+async function fetchContent(type, page = 1) {
     currentType = type;
+    currentEndpoint = `${type}/popular`;
+    isSearch = false;
+    currentGenreId = null;
+    currentPage = page;
     sectionTitle.innerText = type === 'movie' ? "Popular Movies" : "Popular TV Shows";
-    const res = await fetch(`${BASE_URL}/${type}/popular?api_key=${API_KEY}`);
+    const res = await fetch(`${BASE_URL}/${currentEndpoint}?api_key=${API_KEY}&page=${page}`);
     const data = await res.json();
-    displayContent(data.results.map(item => ({ ...item, media_type: type })));
+    totalPages = data.total_pages;
+    updatePagination(data.results.map(item => ({ ...item, media_type: type })));
 }
 
-async function searchContent() {
-    const query = searchInput.value;
+async function searchContent(page = 1) {
+    const query = searchInput.value || searchQuery;
     if(!query) return;
+    searchQuery = query;
+    isSearch = true;
+    currentGenreId = null;
+    currentPage = page;
     sectionTitle.innerText = `Results for: ${query}`;
-    const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
+    const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}&page=${page}`);
     const data = await res.json();
-    displayContent(data.results);
+    totalPages = data.total_pages;
+    updatePagination(data.results);
 }
 
-async function fetchByGenre(genreId, genreName) {
-    toggleMenu(); 
+async function fetchByGenre(genreId, genreName, page = 1) {
+    if (sideMenu.classList.contains('active')) toggleMenu();
+    currentGenreId = genreId;
+    searchQuery = genreName;
+    isSearch = false;
+    currentEndpoint = 'discover/movie';
+    currentPage = page;
     sectionTitle.innerText = `${genreName} Content`;
-    const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
+    const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&page=${page}`);
     const data = await res.json();
-    displayContent(data.results.map(item => ({ ...item, media_type: 'movie' })));
+    totalPages = data.total_pages;
+    updatePagination(data.results.map(item => ({ ...item, media_type: 'movie' })));
+}
+
+async function fetchKDrama(page = 1) {
+    if (sideMenu.classList.contains('active')) toggleMenu();
+    currentGenreId = 'kdrama';
+    isSearch = false;
+    currentEndpoint = 'discover/tv';
+    currentPage = page;
+    sectionTitle.innerText = "K-Dramas (Korean)";
+    const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_original_language=ko&with_genres=18&page=${page}`);
+    const data = await res.json();
+    totalPages = data.total_pages;
+    updatePagination(data.results.map(item => ({ ...item, media_type: 'tv' })));
+}
+
+function updatePagination(results) {
+    displayContent(results);
+    pageNumDisplay.innerText = `Page ${currentPage} of ${totalPages > 500 ? 500 : totalPages}`;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === (totalPages > 500 ? 500 : totalPages);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-async function fetchKDrama() {
-    toggleMenu();
-    sectionTitle.innerText = "K-Dramas (Korean)";
-    const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_original_language=ko&with_genres=18`);
-    const data = await res.json();
-    displayContent(data.results.map(item => ({ ...item, media_type: 'tv' })));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+function changePage(step) {
+    const newPage = currentPage + step;
+    if (isSearch) {
+        searchContent(newPage);
+    } else if (currentGenreId === 'kdrama') {
+        fetchKDrama(newPage);
+    } else if (currentGenreId) {
+        fetchByGenre(currentGenreId, searchQuery, newPage);
+    } else if (currentEndpoint.includes('trending')) {
+        fetchTrending(newPage);
+    } else {
+        const type = currentEndpoint.split('/')[0];
+        fetchContent(type, newPage);
+    }
 }
 
 function displayContent(items) {
@@ -90,7 +147,6 @@ async function openPlayer(id, type) {
     clickTrap.style.display = 'block';
     currentSeason = 1;
     currentEpisode = 1;
-
     if (currentType === 'tv') {
         seriesControls.style.display = 'block';
         await loadSeasons(id);
@@ -159,5 +215,6 @@ function closePlayer() {
     clickTrap.style.display = 'none';
 }
 
-searchBtn.onclick = searchContent;
-searchInput.onkeypress = (e) => { if(e.key === 'Enter') searchContent(); };
+searchBtn.onclick = () => searchContent(1);
+searchInput.onkeypress = (e) => { if(e.key === 'Enter') searchContent(1); };
+        
