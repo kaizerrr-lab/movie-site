@@ -6,11 +6,15 @@ const movieGrid = document.getElementById('movie-grid');
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const sectionTitle = document.getElementById('section-title');
+const playerModal = document.getElementById('playerModal');
+const seriesControls = document.getElementById('series-controls');
+const sideMenu = document.getElementById('side-menu');
 
 let currentVideoId = null;
 let currentType = 'movie';
+let currentSeason = 1;
+let currentEpisode = 1;
 
-// Para sa loading ata?
 window.onload = fetchTrending;
 
 async function fetchTrending() {
@@ -21,6 +25,7 @@ async function fetchTrending() {
 }
 
 async function fetchContent(type) {
+    currentType = type;
     sectionTitle.innerText = type === 'movie' ? "Popular Movies" : "Popular TV Shows";
     const res = await fetch(`${BASE_URL}/${type}/popular?api_key=${API_KEY}`);
     const data = await res.json();
@@ -34,6 +39,28 @@ async function searchContent() {
     const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${query}`);
     const data = await res.json();
     displayContent(data.results);
+}
+
+function toggleMenu() {
+    sideMenu.classList.toggle('active');
+}
+
+async function fetchByGenre(genreId, genreName) {
+    toggleMenu(); 
+    sectionTitle.innerText = `${genreName} Movies`;
+    const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
+    const data = await res.json();
+    displayContent(data.results.map(item => ({ ...item, media_type: 'movie' })));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function fetchKDrama() {
+    toggleMenu();
+    sectionTitle.innerText = "K-Dramas (Korean)";
+    const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_original_language=ko&with_genres=18`);
+    const data = await res.json();
+    displayContent(data.results.map(item => ({ ...item, media_type: 'tv' })));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function displayContent(items) {
@@ -51,27 +78,76 @@ function displayContent(items) {
     });
 }
 
-function openPlayer(id, type) {
+async function openPlayer(id, type) {
     currentVideoId = id;
     currentType = type === 'tv' ? 'tv' : 'movie';
-    document.getElementById('playerModal').style.display = 'block';
-    switchServer(1); // Default to Server 1
+    playerModal.style.display = 'block';
+    currentSeason = 1;
+    currentEpisode = 1;
+
+    if (currentType === 'tv') {
+        seriesControls.style.display = 'block';
+        await loadSeasons(id);
+    } else {
+        seriesControls.style.display = 'none';
+        switchServer(1);
+    }
+}
+
+async function loadSeasons(id) {
+    const res = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}`);
+    const data = await res.json();
+    const select = document.getElementById('season-select');
+    select.innerHTML = '';
+    data.seasons.forEach(s => {
+        if (s.season_number === 0) return; 
+        const opt = document.createElement('option');
+        opt.value = s.season_number;
+        opt.innerText = `Season ${s.season_number}`;
+        select.appendChild(opt);
+    });
+    loadEpisodes();
+}
+
+async function loadEpisodes() {
+    currentSeason = document.getElementById('season-select').value;
+    const res = await fetch(`${BASE_URL}/tv/${currentVideoId}/season/${currentSeason}?api_key=${API_KEY}`);
+    const data = await res.json();
+    const grid = document.getElementById('episode-grid');
+    grid.innerHTML = '';
+    data.episodes.forEach(ep => {
+        const btn = document.createElement('div');
+        btn.className = 'ep-btn';
+        if(ep.episode_number === currentEpisode) btn.classList.add('active');
+        btn.innerText = ep.episode_number;
+        btn.onclick = () => {
+            currentEpisode = ep.episode_number;
+            document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            switchServer(1);
+        };
+        grid.appendChild(btn);
+    });
+    switchServer(1);
 }
 
 function switchServer(serverNum) {
     const frame = document.getElementById('video-frame');
     let url = "";
-    
-    if (serverNum === 1) {
-        url = `https://vidsrc.to/embed/${currentType}/${currentVideoId}`;
+    if (currentType === 'tv') {
+        url = serverNum === 1 
+            ? `https://vidsrc.to/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`
+            : `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1&s=${currentSeason}&e=${currentEpisode}`;
     } else {
-        url = `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1`;
+        url = serverNum === 1 
+            ? `https://vidsrc.to/embed/movie/${currentVideoId}` 
+            : `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1`;
     }
     frame.src = url;
 }
 
 function closePlayer() {
-    document.getElementById('playerModal').style.display = 'none';
+    playerModal.style.display = 'none';
     document.getElementById('video-frame').src = "";
 }
 
