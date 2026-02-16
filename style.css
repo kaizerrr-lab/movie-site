@@ -366,3 +366,35 @@ body {
     cursor: pointer;
     display: none;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 0;
+}
+
+.pagination button {
+    background: var(--card-bg);
+    color: white;
+    border: 1px solid #333;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: var(--primary);
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#page-num {
+    font-weight: bold;
+    color: #888;
+}
