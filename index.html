@@ -3,19 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamVerse | Watch Movies & Shows</title>
+    <title>KaiStream</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="logo">Stream<span>Verse</span></div>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search movies, TV, anime...">
-            <button id="search-btn"><i class="fas fa-search"></i></button>
+        <div class="logo" onclick="fetchTrending()">Kai<span>Stream</span></div>
+        
+        <div class="nav-right">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search...">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
     </nav>
+
+    <div id="side-menu" class="side-menu">
+        <div class="menu-header">
+            <h3>Categories</h3>
+            <i class="fas fa-times" onclick="toggleMenu()"></i>
+        </div>
+        <div class="genre-list">
+            <button onclick="fetchByGenre(28, 'Action')">Action</button>
+            <button onclick="fetchByGenre(12, 'Adventure')">Adventure</button>
+            <button onclick="fetchByGenre(16, 'Animation')">Animation / Anime</button>
+            <button onclick="fetchByGenre(35, 'Comedy')">Comedy</button>
+            <button onclick="fetchByGenre(80, 'Crime')">Crime</button>
+            <button onclick="fetchByGenre(18, 'Drama')">Drama</button>
+            <button onclick="fetchByGenre(27, 'Horror')">Horror</button>
+            <button onclick="fetchByGenre(10749, 'Romance')">Romance</button>
+            <button onclick="fetchByGenre(878, 'Sci-Fi')">Sci-Fi</button>
+            <button onclick="fetchByGenre(53, 'Thriller')">Thriller</button>
+            <button onclick="fetchKDrama()">K-Drama (Korean)</button>
+        </div>
+    </div>
 
     <div class="category-bar">
         <button onclick="fetchContent('movie')">Movies</button>
@@ -25,20 +51,34 @@
 
     <main class="container">
         <h2 id="section-title">Trending Now</h2>
-        <section class="movie-grid" id="movie-grid">
-            </section>
+        <section class="movie-grid" id="movie-grid"></section>
     </main>
 
     <div id="playerModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closePlayer()">&times;</span>
+            <span class="close-btn" onclick="closePlayer()">
+                <i class="fas fa-arrow-left"></i> Back
+            </span>
+            
             <div class="video-wrapper">
-                <<iframe id="video-frame" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
-</div>
+                <iframe id="video-frame" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
+            </div>
+
+            <div id="series-controls" class="series-controls">
+                <div class="dropdown-container">
+                    <label>Season:</label>
+                    <select id="season-select" onchange="loadEpisodes()"></select>
+                </div>
+                <div class="episodes-container">
+                    <label>Episodes:</label>
+                    <div id="episode-grid" class="episode-grid"></div>
+                </div>
+            </div>
+
             <div class="server-list">
                 <span>Switch Server:</span>
-                <button onclick="switchServer(1)">Server 1</button>
-                <button onclick="switchServer(2)">Server 2</button>
+                <button onclick="switchServer(1)">Server 1 (Fast)</button>
+                <button onclick="switchServer(2)">Server 2 (Backup)</button>
             </div>
         </div>
     </div>
