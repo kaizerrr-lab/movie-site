@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamVerse | Watch Movies & Shows</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Stream<span>Verse</span></div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search movies, TV, anime...">
+            <button id="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+    </nav>
+
+    <div class="category-bar">
+        <button onclick="fetchContent('movie')">Movies</button>
+        <button onclick="fetchContent('tv')">TV Series</button>
+        <button onclick="fetchTrending()">Trending</button>
+    </div>
+
+    <main class="container">
+        <h2 id="section-title">Trending Now</h2>
+        <section class="movie-grid" id="movie-grid">
+            </section>
+    </main>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closePlayer()">&times;</span>
+            <div class="video-wrapper">
+                <<iframe id="video-frame" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
+</div>
+            <div class="server-list">
+                <span>Switch Server:</span>
+                <button onclick="switchServer(1)">Server 1</button>
+                <button onclick="switchServer(2)">Server 2</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
