@@ -197,14 +197,26 @@ async function loadEpisodes() {
 function switchServer(serverNum) {
     const frame = document.getElementById('video-frame');
     let url = "";
+
     if (currentType === 'tv') {
-        url = serverNum === 1 
-            ? `https://vidsrc.to/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`
-            : `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1&s=${currentSeason}&e=${currentEpisode}`;
+        if (serverNum === 1) {
+            
+            url = `https://vidsrc.xyz/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`;
+        } else if (serverNum === 2) {
+            
+            url = `https://embed.su/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`;
+        } else {
+            
+            url = `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1&s=${currentSeason}&e=${currentEpisode}`;
+        }
     } else {
-        url = serverNum === 1 
-            ? `https://vidsrc.to/embed/movie/${currentVideoId}` 
-            : `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1`;
+        if (serverNum === 1) {
+            url = `https://vidsrc.xyz/embed/movie/${currentVideoId}`;
+        } else if (serverNum === 2) {
+            url = `https://embed.su/embed/movie/${currentVideoId}`;
+        } else {
+            url = `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1`;
+        }
     }
     frame.src = url;
 }
@@ -217,4 +229,3 @@ function closePlayer() {
 
 searchBtn.onclick = () => searchContent(1);
 searchInput.onkeypress = (e) => { if(e.key === 'Enter') searchContent(1); };
-        
