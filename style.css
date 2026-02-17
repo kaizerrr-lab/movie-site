@@ -399,32 +399,38 @@ body {
     color: #888;
 }
 
-.fav-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(0,0,0,0.7);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+.card {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
     cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: 0.2s;
 }
 
+.fav-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20; 
+    cursor: pointer;
+    transition: 0.3s;
+}
+
 .fav-btn:hover {
-    transform: scale(1.1);
     background: #fff;
+    transform: scale(1.1);
 }
 
 .fav-btn i {
-    font-size: 1rem;
-}
-
-.pagination.hidden {
-    display: none;
+    font-size: 1.1rem;
+    pointer-events: none;
 }
