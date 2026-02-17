@@ -398,3 +398,33 @@ body {
     font-weight: bold;
     color: #888;
 }
+
+.fav-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.7);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.fav-btn:hover {
+    transform: scale(1.1);
+    background: #fff;
+}
+
+.fav-btn i {
+    font-size: 1rem;
+}
+
+.pagination.hidden {
+    display: none;
+}
