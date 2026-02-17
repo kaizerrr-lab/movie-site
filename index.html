@@ -24,24 +24,27 @@
     </nav>
 
     <div id="side-menu" class="side-menu">
-        <div class="menu-header">
-            <h3>Categories</h3>
-            <i class="fas fa-times" onclick="toggleMenu()"></i>
-        </div>
-        <div class="genre-list">
-            <button onclick="fetchByGenre(28, 'Action')">Action</button>
-            <button onclick="fetchByGenre(12, 'Adventure')">Adventure</button>
-            <button onclick="fetchByGenre(16, 'Animation')">Animation / Anime</button>
-            <button onclick="fetchByGenre(35, 'Comedy')">Comedy</button>
-            <button onclick="fetchByGenre(80, 'Crime')">Crime</button>
-            <button onclick="fetchByGenre(18, 'Drama')">Drama</button>
-            <button onclick="fetchByGenre(27, 'Horror')">Horror</button>
-            <button onclick="fetchByGenre(10749, 'Romance')">Romance</button>
-            <button onclick="fetchByGenre(878, 'Sci-Fi')">Sci-Fi</button>
-            <button onclick="fetchByGenre(53, 'Thriller')">Thriller</button>
-            <button onclick="fetchKDrama()">K-Drama (Korean)</button>
-        </div>
+    <div class="menu-header">
+        <h3>Library</h3>
+        <i class="fas fa-times" onclick="toggleMenu()"></i>
     </div>
+    <div class="genre-list">
+        <button onclick="fetchFavorites()"><i class="fas fa-heart"></i> My Watchlist</button>
+        <button onclick="fetchHistory()"><i class="fas fa-history"></i> Watch History</button>
+        <hr style="border: 0.5px solid #333; margin: 10px 0;">
+        <h3>Genres</h3>
+        <button onclick="fetchByGenre(28, 'Action')">Action</button>
+        <button onclick="fetchByGenre(53, 'Thriller')">Thriller</button>
+        <button onclick="fetchByGenre(27, 'Horror')">Horror</button>
+        <button onclick="fetchByGenre(35, 'Comedy')">Comedy</button>
+        <button onclick="fetchByGenre(10749, 'Romance')">Romance</button>
+        <button onclick="fetchByGenre(878, 'Sci-Fi')">Sci-Fi</button>
+        <button onclick="fetchByGenre(16, 'Animation')">Animation (Movies)</button>
+        <button onclick="fetchAnime()">Anime (Series)</button>
+        <button onclick="fetchKDrama()">K-Drama</button>
+    </div>
+</div>
+
 
     <div class="category-bar">
         <button onclick="fetchContent('movie')">Movies</button>
