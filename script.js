@@ -276,14 +276,19 @@ async function loadEpisodes() {
 function switchServer(serverNum) {
     const frame = document.getElementById('video-frame');
     let url = "";
+
     if (currentType === 'tv') {
-        url = serverNum === 1 
-            ? `https://vidsrc.to/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`
-            : `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1&s=${currentSeason}&e=${currentEpisode}`;
+        if (serverNum === 1) {
+            url = `https://embed.su/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`;
+        } else {
+            url = `https://vidsrc.xyz/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`;
+        }
     } else {
-        url = serverNum === 1 
-            ? `https://vidsrc.to/embed/movie/${currentVideoId}` 
-            : `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1`;
+        if (serverNum === 1) {
+            url = `https://embed.su/embed/movie/${currentVideoId}`;
+        } else {
+            url = `https://vidsrc.xyz/embed/movie/${currentVideoId}`;
+        }
     }
     frame.src = url;
 }
