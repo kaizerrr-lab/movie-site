@@ -279,15 +279,22 @@ function switchServer(serverNum) {
 
     if (currentType === 'tv') {
         if (serverNum === 1) {
-            url = `https://embed.su/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`;
-        } else {
+            // Priority: Vidsrc.xyz (Your preferred one)
             url = `https://vidsrc.xyz/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`;
+        } else if (serverNum === 2) {
+            // Backup 1: Vidsrc.to
+            url = `https://vidsrc.to/embed/tv/${currentVideoId}/${currentSeason}/${currentEpisode}`;
+        } else {
+            // Backup 2: SuperEmbed (Very reliable)
+            url = `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1&s=${currentSeason}&e=${currentEpisode}`;
         }
     } else {
         if (serverNum === 1) {
-            url = `https://embed.su/embed/movie/${currentVideoId}`;
-        } else {
             url = `https://vidsrc.xyz/embed/movie/${currentVideoId}`;
+        } else if (serverNum === 2) {
+            url = `https://vidsrc.to/embed/movie/${currentVideoId}`;
+        } else {
+            url = `https://multiembed.mov/?video_id=${currentVideoId}&tmdb=1`;
         }
     }
     frame.src = url;
